@@ -10,8 +10,8 @@ class VersionRetriever {
     static String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
 
     static boolean validateMinecraftVersion(String version) {
-        def versions = new JsonSlurper().parseText(getInputStream(meta, "/v2/versions/game").getText())
-        Iterator it = versions.iterator()
+        def validVersions = jsonSlurp("/v2/versions/game")
+        Iterator it = validVersions.iterator()
         while (it.hasNext()) {
             def v = it.next()
             if (v.version == version) {
@@ -20,6 +20,20 @@ class VersionRetriever {
             }
         }
         return false
+    }
+
+    static String getLatestLoaderVersion() {
+        def loader = jsonSlurp("/v2/versions/loader")
+        Iterator it = loader.iterator()
+        while (it.hasNext()) {
+            def v = it.next()
+            if (v.stable) return v.version
+        }
+        return "Error: No loader version found :("
+    }
+
+    static Object jsonSlurp(String url) {
+        return new JsonSlurper().parseText(getInputStream(meta, url).getText())
     }
 
     static InputStream getInputStream(String[] hostname, String path) {

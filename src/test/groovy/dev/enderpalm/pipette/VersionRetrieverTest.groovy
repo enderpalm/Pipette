@@ -15,6 +15,15 @@ class VersionRetrieverTest extends Specification {
         "1.19.4-pre1"                  | true
         "22w45a"                       | true
         "1.18_experimental-snapshot-1" | true
-
     }
+
+    //* -- Update this test when loader version changes --
+    def "get latest loader version"() {
+        given:
+        def loader = VersionRetriever.getLatestLoaderVersion()
+
+        expect:
+        loader.matches("0.14.14")
+    }
+     //*/
 }
