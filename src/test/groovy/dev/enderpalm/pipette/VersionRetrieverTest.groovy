@@ -25,5 +25,17 @@ class VersionRetrieverTest extends Specification {
         expect:
         loader.matches("0.14.14")
     }
-     //*/
+    //*/
+
+    def "get yarn mapping version"() {
+        expect:
+        VersionRetriever.getYarnMappingVersion(minecraftVersion) == expected
+        where:
+        minecraftVersion                         | expected
+        "1.19_deep_dark_experimental_snapshot-1" | "1.19_deep_dark_experimental_snapshot-1+build.4"
+        "1.17.2"                                 | "Error: No yarn mappings found for game version 1.17.2 :("
+        "1.19.4-pre1"                            | "1.19.4-pre1+build.6"
+        "22w45a"                                 | "22w45a+build.18"
+        "1.14.3-pre2"                            | "1.14.3-pre2+build.18"
+    }
 }
