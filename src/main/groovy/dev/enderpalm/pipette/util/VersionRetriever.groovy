@@ -4,7 +4,7 @@ class VersionRetriever {
 
     // Hostname for the Fabric's web service
     String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
-    String[] maven = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
+    String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
 
     static InputStream getInputStream(String[] hostname, String path) {
         for (String host : hostname) {
