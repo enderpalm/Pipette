@@ -5,7 +5,6 @@ import groovy.json.JsonSlurper
 class VersionRetriever {
 
     // Hostname for the Fabric's web service
-    static String workingVersion
     static String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
     static String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
 
@@ -15,11 +14,20 @@ class VersionRetriever {
         while (it.hasNext()) {
             def v = it.next()
             if (v.version == version) {
-                workingVersion = version
                 return true
             }
         }
         return false
+    }
+
+    static String getYarnMappingVersion(String minecraftVersion) {
+        def yarn = jsonSlurp("/v2/versions/yarn")
+        Iterator it = yarn.iterator()
+        while (it.hasNext()) {
+            def v = it.next()
+            if (v.gameVersion == minecraftVersion) return v.version
+        }
+        return "Error: No yarn mappings found for game version $minecraftVersion :("
     }
 
     static String getLatestLoaderVersion() {
