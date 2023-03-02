@@ -9,10 +9,12 @@ class VersionRetriever {
     // Hostname for the Fabric's web service
     static String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
     static String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
+    static Map<String, String> specialApiVersionsMap = new HashMap<>()
     static String nextStable = "1.19.4"
 
     static @Nullable
     String validateVersionAndFindStable(String target) {
+        if (specialApiVersionsMap.containsKey(target)) return "specialVersion"
         def isValid = false
         @Nullable String stable = null
         Iterator validGameVersion = jsonSlurp("/v2/versions/game").iterator()
@@ -46,8 +48,9 @@ class VersionRetriever {
     }
 
     static String getFabricApiVersion(String target, String stable) {
+        if (specialApiVersionsMap.containsKey(target)) return specialApiVersionsMap.get(target)
         def xml = new XmlSlurper().parse(getInputStream(maven, "/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml"))
-        String[] filter = [stable, stable.find(~/\b[0-9]\.[0-9][0-9]/)]
+        String[] filter = [stable, stable.find(~/\b[0-9]\.[0-9][0-9]/), target.find(~/\b[0-9]\.[0-9][0-9]/)]
         for (String suffix : filter) {
             Iterator fabric = xml.versioning.versions.version.iterator().reverse()
             while (fabric.hasNext()) {
@@ -71,6 +74,13 @@ class VersionRetriever {
             }
         }
         throw new Exception("Pipette: Failed to connect to any host :(")
+    }
+
+    static{
+        for (def i = 1; i <= 7; i++) specialApiVersionsMap.put("1.18_experimental-snapshot-" + i, "0.40.1+1.18_experimental")
+        specialApiVersionsMap.put("1.19_deep_dark_experimental_snapshot-1", "0.58.0+1.19")
+        specialApiVersionsMap.put("20w14infinite", "0.46.1+1.17")
+        specialApiVersionsMap.put("22w13oneblockatatime", "0.48.1+22w13oneblockatatime")
     }
 
 }
