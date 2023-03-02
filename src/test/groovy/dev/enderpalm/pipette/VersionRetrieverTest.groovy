@@ -7,7 +7,7 @@ class VersionRetrieverTest extends Specification {
 
     def "Validate version and find stable"() {
         expect:
-        VersionRetriever.validateVersionAndFindStable(minecraftVersion) == expected
+        VersionRetriever.getInstance().validateVersionAndFindStable(minecraftVersion) == expected
         println("Raw version: ${minecraftVersion}, Stable: ${expected}")
         where:
         minecraftVersion               | expected
@@ -22,7 +22,7 @@ class VersionRetrieverTest extends Specification {
     //* -- Update this test when loader version changes --
     def "Latest Fabric loader version"() {
         given:
-        def loader = VersionRetriever.getLatestLoaderVersion()
+        def loader = VersionRetriever.getInstance().getLatestLoaderVersion()
 
         expect:
         loader.matches("0.14.14")
@@ -31,7 +31,7 @@ class VersionRetrieverTest extends Specification {
 
     def "Yarn mapping version"() {
         expect:
-        VersionRetriever.getYarnMappingVersion(minecraftVersion) == expected
+        VersionRetriever.getInstance().getYarnMappingVersion(minecraftVersion) == expected
         where:
         minecraftVersion                         | expected
         "1.19_deep_dark_experimental_snapshot-1" | "1.19_deep_dark_experimental_snapshot-1+build.4"
@@ -44,8 +44,9 @@ class VersionRetrieverTest extends Specification {
 
     def "Fabric Api Version"() {
         given:
-        def stable = VersionRetriever.validateVersionAndFindStable(minecraftVersion as String)
-        def computed = VersionRetriever.getFabricApiVersion(minecraftVersion as String, stable)
+        def instance = VersionRetriever.getInstance()
+        def stable = instance.validateVersionAndFindStable(minecraftVersion as String)
+        def computed = instance.getFabricApiVersion(minecraftVersion as String, stable)
         println("Raw version: ${minecraftVersion}, Stable: ${stable}, Fabric API: ${computed}")
 
         expect:
