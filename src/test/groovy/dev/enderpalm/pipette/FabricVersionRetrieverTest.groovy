@@ -1,13 +1,13 @@
 package dev.enderpalm.pipette
 
 import spock.lang.Specification
-import dev.enderpalm.pipette.util.VersionRetriever
+import dev.enderpalm.pipette.util.FabricVersionRetriever
 
-class VersionRetrieverTest extends Specification {
+class FabricVersionRetrieverTest extends Specification {
 
     def "Validate version and find stable"() {
         expect:
-        VersionRetriever.getInstance().validateVersionAndFindStable(minecraftVersion) == expected
+        FabricVersionRetriever.getInstance().validateVersionAndFindStable(minecraftVersion) == expected
         println("Raw version: ${minecraftVersion}, Stable: ${expected}")
         where:
         minecraftVersion               | expected
@@ -22,7 +22,7 @@ class VersionRetrieverTest extends Specification {
     //* -- Update this test when loader version changes --
     def "Latest Fabric loader version"() {
         given:
-        def loader = VersionRetriever.getInstance().getLatestLoaderVersion()
+        def loader = FabricVersionRetriever.getInstance().getLatestLoaderVersion()
 
         expect:
         loader.matches("0.14.14")
@@ -31,7 +31,7 @@ class VersionRetrieverTest extends Specification {
 
     def "Yarn mapping version"() {
         expect:
-        VersionRetriever.getInstance().getYarnMappingVersion(minecraftVersion) == expected
+        FabricVersionRetriever.getInstance().getYarnMappingVersion(minecraftVersion) == expected
         where:
         minecraftVersion                         | expected
         "1.19_deep_dark_experimental_snapshot-1" | "1.19_deep_dark_experimental_snapshot-1+build.4"
@@ -44,7 +44,7 @@ class VersionRetrieverTest extends Specification {
 
     def "Fabric Api Version"() {
         given:
-        def instance = VersionRetriever.getInstance()
+        def instance = FabricVersionRetriever.getInstance()
         def stable = instance.validateVersionAndFindStable(minecraftVersion as String)
         def computed = instance.getFabricApiVersion(minecraftVersion as String, stable)
         println("Raw version: ${minecraftVersion}, Stable: ${stable}, Fabric API: ${computed}")
