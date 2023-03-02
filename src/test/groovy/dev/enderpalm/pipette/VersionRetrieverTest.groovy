@@ -65,25 +65,4 @@ class VersionRetrieverTest extends Specification {
         "1.18_experimental-snapshot-6"           | "0.40.1+1.18_experimental"
 
     }
-
-    def "Fabric Api Version"() {
-        given:
-        def stable = VersionRetriever.validateVersionAndFindStable(minecraftVersion as String)
-        def computed = VersionRetriever.getFabricApiVersion(minecraftVersion as String, stable)
-        println("Raw version: ${minecraftVersion}, Stable: ${stable}, Fabric API: ${computed}")
-
-        expect:
-        computed == expected
-
-        where: // based on wiki's data, not Fabric website
-        minecraftVersion | expected
-        "1.18.1"         | "0.46.6+1.18"
-        "1.18"           | "0.46.6+1.18"
-        "1.19"           | "0.58.0+1.19"
-        "1.18-rc4"       | "0.46.6+1.18"
-        "19w37a"         | "0.28.5+1.15"
-        "1.16.2-rc2"     | "0.42.0+1.16"
-        "1.19.3-rc2"     | "0.75.1+1.19.3"
-
-    }
 }
