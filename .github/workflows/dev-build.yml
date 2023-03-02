@@ -2,10 +2,8 @@
 name: Groovy CI
 
 on:
-  push:
-    branches: [ "master" , "version-retrieve"]
-  pull_request:
-    branches: [ "master" , "version-retrieve"]
+  - push
+  - pull_request
 
 jobs:
   build:
