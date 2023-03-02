@@ -1,7 +1,6 @@
 package dev.enderpalm.pipette.util
 
 import groovy.json.JsonSlurper
-import groovy.xml.XmlSlurper
 import org.gradle.internal.impldep.org.jetbrains.annotations.Nullable
 
 class VersionRetriever {
@@ -9,19 +8,16 @@ class VersionRetriever {
     // Hostname for the Fabric's web service
     static String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
     static String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
-    static Map<String, String> specialApiVersionsMap = new HashMap<>()
     static String nextStable = "1.19.4"
 
-    static @Nullable
-    String validateVersionAndFindStable(String target) {
-        if (specialApiVersionsMap.containsKey(target)) return "specialVersion"
+    static @Nullable String validateVersionAndFindStable(String version) {
         def isValid = false
         @Nullable String stable = null
         Iterator validGameVersion = jsonSlurp("/v2/versions/game").iterator()
         while (validGameVersion.hasNext()) {
-            def ver = validGameVersion.next()
-            stable = ver.stable ? ver.version : stable
-            if (ver.version == target) {
+            def v = validGameVersion.next()
+            stable = v.stable ? v.version : stable
+            if (v.version == version) {
                 isValid = true
                 break
             }
@@ -29,36 +25,22 @@ class VersionRetriever {
         return isValid ? (stable ?: nextStable) : null
     }
 
-    static String getYarnMappingVersion(String target) {
+    static String getYarnMappingVersion(String minecraftVersion) {
         Iterator yarn = jsonSlurp("/v2/versions/yarn").iterator()
         while (yarn.hasNext()) {
-            def map = yarn.next()
-            if (map.gameVersion == target) return map.version
+            def v = yarn.next()
+            if (v.gameVersion == minecraftVersion) return v.version
         }
-        return "Error: No yarn mappings found for game version $target :("
+        return "Error: No yarn mappings found for game version $minecraftVersion :("
     }
 
     static String getLatestLoaderVersion() {
         Iterator loader = jsonSlurp("/v2/versions/loader").iterator()
         while (loader.hasNext()) {
-            def load = loader.next()
-            if (load.stable) return load.version
+            def v = loader.next()
+            if (v.stable) return v.version
         }
         return "Error: No loader version found :("
-    }
-
-    static String getFabricApiVersion(String target, String stable) {
-        if (specialApiVersionsMap.containsKey(target)) return specialApiVersionsMap.get(target)
-        def xml = new XmlSlurper().parse(getInputStream(maven, "/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml"))
-        String[] filter = [stable, stable.find(~/\b[0-9]\.[0-9][0-9]/), target.find(~/\b[0-9]\.[0-9][0-9]/)]
-        for (String suffix : filter) {
-            Iterator fabric = xml.versioning.versions.version.iterator().reverse()
-            while (fabric.hasNext()) {
-                String api = fabric.next()
-                if (api.endsWith(suffix)) return api
-            }
-        }
-        return "Error: No fabric api version found for game version $target :("
     }
 
     static Object jsonSlurp(String url) {
@@ -74,13 +56,6 @@ class VersionRetriever {
             }
         }
         throw new Exception("Pipette: Failed to connect to any host :(")
-    }
-
-    static{
-        for (def i = 1; i <= 7; i++) specialApiVersionsMap.put("1.18_experimental-snapshot-" + i, "0.40.1+1.18_experimental")
-        specialApiVersionsMap.put("1.19_deep_dark_experimental_snapshot-1", "0.58.0+1.19")
-        specialApiVersionsMap.put("20w14infinite", "0.46.1+1.17")
-        specialApiVersionsMap.put("22w13oneblockatatime", "0.48.1+22w13oneblockatatime")
     }
 
 }
