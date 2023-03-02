@@ -7,12 +7,16 @@ import org.gradle.internal.impldep.org.jetbrains.annotations.Nullable
 class VersionRetriever {
 
     // Hostname for the Fabric's web service
-    static String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
-    static String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
+    String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
+    String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
     static Map<String, String> specialApiVersionsMap = new HashMap<>()
     static String nextStable = "1.19.4"
 
-    static @Nullable
+    static VersionRetriever getInstance() {
+        return new VersionRetriever()
+    }
+
+    @Nullable
     String validateVersionAndFindStable(String target) {
         if (specialApiVersionsMap.containsKey(target)) return "specialVersion"
         def isValid = false
@@ -29,7 +33,7 @@ class VersionRetriever {
         return isValid ? (stable ?: nextStable) : null
     }
 
-    static String getYarnMappingVersion(String target) {
+    String getYarnMappingVersion(String target) {
         Iterator yarn = jsonSlurp("/v2/versions/yarn").iterator()
         while (yarn.hasNext()) {
             def map = yarn.next()
@@ -38,7 +42,7 @@ class VersionRetriever {
         return "Error: No yarn mappings found for game version $target :("
     }
 
-    static String getLatestLoaderVersion() {
+    String getLatestLoaderVersion() {
         Iterator loader = jsonSlurp("/v2/versions/loader").iterator()
         while (loader.hasNext()) {
             def load = loader.next()
@@ -47,7 +51,7 @@ class VersionRetriever {
         return "Error: No loader version found :("
     }
 
-    static String getFabricApiVersion(String target, String stable) {
+    String getFabricApiVersion(String target, String stable) {
         if (specialApiVersionsMap.containsKey(target)) return specialApiVersionsMap.get(target)
         def xml = new XmlSlurper().parse(getInputStream(maven, "/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml"))
         String[] filter = [stable, stable.find(~/\b[0-9]\.[0-9][0-9]/), target.find(~/\b[0-9]\.[0-9][0-9]/)]
@@ -61,11 +65,11 @@ class VersionRetriever {
         return "Error: No fabric api version found for game version $target :("
     }
 
-    static Object jsonSlurp(String url) {
+    Object jsonSlurp(String url) {
         return new JsonSlurper().parseText(getInputStream(meta, url).getText())
     }
 
-    static InputStream getInputStream(String[] hostname, String path) {
+    InputStream getInputStream(String[] hostname, String path) {
         for (String host : hostname) {
             try {
                 return new URL(host + path).openConnection().getInputStream()
