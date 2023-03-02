@@ -9,10 +9,9 @@ class VersionRetriever {
     static String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
 
     static boolean validateMinecraftVersion(String version) {
-        def validVersions = jsonSlurp("/v2/versions/game")
-        Iterator it = validVersions.iterator()
-        while (it.hasNext()) {
-            def v = it.next()
+        Iterator validGameVersion = jsonSlurp("/v2/versions/game").iterator()
+        while (validGameVersion.hasNext()) {
+            def v = validGameVersion.next()
             if (v.version == version) {
                 return true
             }
@@ -21,20 +20,18 @@ class VersionRetriever {
     }
 
     static String getYarnMappingVersion(String minecraftVersion) {
-        def yarn = jsonSlurp("/v2/versions/yarn")
-        Iterator it = yarn.iterator()
-        while (it.hasNext()) {
-            def v = it.next()
+        Iterator yarn = jsonSlurp("/v2/versions/yarn").iterator()
+        while (yarn.hasNext()) {
+            def v = yarn.next()
             if (v.gameVersion == minecraftVersion) return v.version
         }
         return "Error: No yarn mappings found for game version $minecraftVersion :("
     }
 
     static String getLatestLoaderVersion() {
-        def loader = jsonSlurp("/v2/versions/loader")
-        Iterator it = loader.iterator()
-        while (it.hasNext()) {
-            def v = it.next()
+        Iterator loader = jsonSlurp("/v2/versions/loader").iterator()
+        while (loader.hasNext()) {
+            def v = loader.next()
             if (v.stable) return v.version
         }
         return "Error: No loader version found :("
