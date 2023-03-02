@@ -1,22 +1,28 @@
 package dev.enderpalm.pipette.util
 
 import groovy.json.JsonSlurper
+import org.gradle.internal.impldep.org.jetbrains.annotations.Nullable
 
 class VersionRetriever {
 
     // Hostname for the Fabric's web service
     static String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
     static String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
+    static String nextStable = "1.19.4"
 
-    static boolean validateMinecraftVersion(String version) {
+    static @Nullable String validateVersionAndFindStable(String version) {
+        def isValid = false
+        @Nullable String stable = null
         Iterator validGameVersion = jsonSlurp("/v2/versions/game").iterator()
         while (validGameVersion.hasNext()) {
             def v = validGameVersion.next()
+            stable = v.stable ? v.version : stable
             if (v.version == version) {
-                return true
+                isValid = true
+                break
             }
         }
-        return false
+        return isValid ? (stable ?: nextStable) : null
     }
 
     static String getYarnMappingVersion(String minecraftVersion) {

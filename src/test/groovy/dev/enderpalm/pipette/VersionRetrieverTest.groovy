@@ -5,20 +5,22 @@ import dev.enderpalm.pipette.util.VersionRetriever
 
 class VersionRetrieverTest extends Specification {
 
-    def "validate Minecraft version"() {
+    def "Validate version and find stable"() {
         expect:
-        VersionRetriever.validateMinecraftVersion(minecraftVersion) == expected
+        VersionRetriever.validateVersionAndFindStable(minecraftVersion) == expected
+        println("Raw version: ${minecraftVersion}, Stable: ${expected}")
         where:
         minecraftVersion               | expected
-        "1.17.1"                       | true
-        "1.17.2"                       | false
-        "1.19.4-pre1"                  | true
-        "22w45a"                       | true
-        "1.18_experimental-snapshot-1" | true
+        "1.17.1"                       | "1.17.1"
+        "1.17.2"                       | null
+        "1.19.4-pre1"                  | "1.19.4"
+        "22w45a"                       | "1.19.3"
+        "1.18_experimental-snapshot-1" | "1.18"
+        "18w43b"                       | "1.14"
     }
 
     //* -- Update this test when loader version changes --
-    def "get latest loader version"() {
+    def "Latest Fabric loader version"() {
         given:
         def loader = VersionRetriever.getLatestLoaderVersion()
 
@@ -27,7 +29,7 @@ class VersionRetrieverTest extends Specification {
     }
     //*/
 
-    def "get yarn mapping version"() {
+    def "Yarn mapping version"() {
         expect:
         VersionRetriever.getYarnMappingVersion(minecraftVersion) == expected
         where:
