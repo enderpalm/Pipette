@@ -17,9 +17,9 @@ class VersionRetriever {
         @Nullable String stable = null
         Iterator validGameVersion = jsonSlurp("/v2/versions/game").iterator()
         while (validGameVersion.hasNext()) {
-            def v = validGameVersion.next()
-            stable = v.stable ? v.version : stable
-            if (v.version == target) {
+            def ver = validGameVersion.next()
+            stable = ver.stable ? ver.version : stable
+            if (ver.version == target) {
                 isValid = true
                 break
             }
@@ -30,8 +30,8 @@ class VersionRetriever {
     static String getYarnMappingVersion(String target) {
         Iterator yarn = jsonSlurp("/v2/versions/yarn").iterator()
         while (yarn.hasNext()) {
-            def v = yarn.next()
-            if (v.gameVersion == target) return v.version
+            def map = yarn.next()
+            if (map.gameVersion == target) return map.version
         }
         return "Error: No yarn mappings found for game version $target :("
     }
@@ -39,8 +39,8 @@ class VersionRetriever {
     static String getLatestLoaderVersion() {
         Iterator loader = jsonSlurp("/v2/versions/loader").iterator()
         while (loader.hasNext()) {
-            def v = loader.next()
-            if (v.stable) return v.version
+            def load = loader.next()
+            if (load.stable) return load.version
         }
         return "Error: No loader version found :("
     }
@@ -51,9 +51,8 @@ class VersionRetriever {
         for (String suffix : filter) {
             Iterator fabric = xml.versioning.versions.version.iterator().reverse()
             while (fabric.hasNext()) {
-                String v = fabric.next()
-                boolean match = v.endsWith(suffix)
-                if (match) return v
+                String api = fabric.next()
+                if (api.endsWith(suffix)) return api
             }
         }
         return "Error: No fabric api version found for game version $target :("
