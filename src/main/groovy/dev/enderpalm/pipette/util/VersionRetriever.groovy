@@ -16,6 +16,10 @@ class VersionRetriever {
         return new VersionRetriever()
     }
 
+    Collection<String> listGameVersions(){
+        return jsonSlurp("/v2/versions/game").collect({it.version})
+    }
+
     @Nullable
     String validateVersionAndFindStable(String target) {
         if (specialApiVersionsMap.containsKey(target)) return "specialVersion"
