@@ -3,9 +3,11 @@ name: Groovy CI
 
 on:
   push:
-    branches: [ "master" , "version-retrieve"]
+    branches: 
+      - '!master'
   pull_request:
-    branches: [ "master" , "version-retrieve"]
+    branches:
+      - '**'
 
 jobs:
   build:
