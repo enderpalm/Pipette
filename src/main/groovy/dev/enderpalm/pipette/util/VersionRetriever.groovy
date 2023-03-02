@@ -1,6 +1,7 @@
 package dev.enderpalm.pipette.util
 
 import groovy.json.JsonSlurper
+import groovy.xml.XmlSlurper
 import org.gradle.internal.impldep.org.jetbrains.annotations.Nullable
 
 class VersionRetriever {
@@ -10,7 +11,8 @@ class VersionRetriever {
     static String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
     static String nextStable = "1.19.4"
 
-    static @Nullable String validateVersionAndFindStable(String target) {
+    static @Nullable
+    String validateVersionAndFindStable(String target) {
         def isValid = false
         @Nullable String stable = null
         Iterator validGameVersion = jsonSlurp("/v2/versions/game").iterator()
@@ -43,8 +45,18 @@ class VersionRetriever {
         return "Error: No loader version found :("
     }
 
-    static String getFabricApiVersion(String target, String stable){
-        return null
+    static String getFabricApiVersion(String target, String stable) {
+        def xml = new XmlSlurper().parse(getInputStream(maven, "/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml"))
+        String[] filter = [stable, stable.find(~/\b[0-9]\.[0-9][0-9]/)]
+        for (String suffix : filter) {
+            Iterator fabric = xml.versioning.versions.version.iterator().reverse()
+            while (fabric.hasNext()) {
+                String v = fabric.next()
+                boolean match = v.endsWith(suffix)
+                if (match) return v
+            }
+        }
+        return "Error: No fabric api version found for game version $target :("
     }
 
     static Object jsonSlurp(String url) {
