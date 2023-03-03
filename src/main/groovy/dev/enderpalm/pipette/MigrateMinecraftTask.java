@@ -42,10 +42,10 @@ public class MigrateMinecraftTask extends DefaultTask {
         this.properties.put("minecraft_version", this.target);
         this.properties.put("loader_version", loader);
         this.properties.put("yarn_mappings", retriever.getYarnMappingVersion(this.target));
-        this.properties.put("fabric_version", retriever.getFabricApiVersion(this.target, stable));
+        this.properties.put("fabric_version", retriever.getFabricApiVersion(this.target));
 
         fileHandler.modifyGradleProperties(project.getAnt(), this.properties);
-        Object json = fileHandler.modifyFabricModJson(project.getProjectDir(), loader, this.target, java);
+        Object json = fileHandler.modifyFabricModJson(project.getProjectDir(), loader, stable, java);
         fileHandler.modifyMixinJson(project.getProjectDir(), json, java);
     }
 }

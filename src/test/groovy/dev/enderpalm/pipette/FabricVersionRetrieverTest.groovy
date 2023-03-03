@@ -17,6 +17,7 @@ class FabricVersionRetrieverTest extends Specification {
         "22w45a"                       | "1.19.3"
         "1.18_experimental-snapshot-1" | "specialVersion"
         "18w43b"                       | "1.14"
+        "20w14a"                       | "1.16"
     }
 
     //* -- Update this test when loader version changes --
@@ -35,7 +36,7 @@ class FabricVersionRetrieverTest extends Specification {
         where:
         minecraftVersion                         | expected
         "1.19_deep_dark_experimental_snapshot-1" | "1.19_deep_dark_experimental_snapshot-1+build.4"
-        "1.17.2"                                 | "Error: No yarn mappings found for game version 1.17.2 :("
+        "1.17.2"                                 | null
         "1.19.4-pre1"                            | "1.19.4-pre1+build.6"
         "22w45a"                                 | "22w45a+build.18"
         "1.14.3-pre2"                            | "1.14.3-pre2+build.18"
@@ -46,7 +47,7 @@ class FabricVersionRetrieverTest extends Specification {
         given:
         def instance = FabricVersionRetriever.getInstance()
         def stable = instance.validateVersionAndFindStable(minecraftVersion as String)
-        def computed = instance.getFabricApiVersion(minecraftVersion as String, stable)
+        def computed = instance.getFabricApiVersion(minecraftVersion as String)
         println("Raw version: ${minecraftVersion}, Stable: ${stable}, Fabric API: ${computed}")
 
         expect:
@@ -55,12 +56,11 @@ class FabricVersionRetrieverTest extends Specification {
         where: // based on wiki's data, not Fabric website
         minecraftVersion                         | expected
         "1.18.1"                                 | "0.46.6+1.18"
-        "1.18"                                   | "0.46.6+1.18"
+        "1.18"                                   | "0.44.0+1.18"
         "1.19"                                   | "0.58.0+1.19"
-        "1.18-rc4"                               | "0.46.6+1.18"
-        "19w37a"                                 | "0.28.5+1.15"
-        "1.16.2-rc2"                             | "0.42.0+1.16"
-        "1.19.3-rc2"                             | "0.75.1+1.19.3"
+        "1.18-rc4"                               | "0.43.1+1.18"
+        "19w37a"                                 | "0.3.2+build.230-1.15"
+        "1.16.2-rc1"                             | "0.17.1+build.394-1.16"
         "1.14.4"                                 | "0.28.5+1.14"
         "1.19_deep_dark_experimental_snapshot-1" | "0.58.0+1.19"
         "1.18_experimental-snapshot-6"           | "0.40.1+1.18_experimental"
