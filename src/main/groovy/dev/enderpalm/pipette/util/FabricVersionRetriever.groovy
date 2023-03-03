@@ -25,7 +25,8 @@ class FabricVersionRetriever {
         if (specialVersionsMap.containsKey(target)) {
             return specialVersionsMap.get(target)[1].toInteger()
         }
-        @Nullable String minor = stable == specialVersionKey ? (target.find(~/\.[0-9][0-9]_/)  ?: target) : (stable.find(~/\.[0-9][0-9]\./) ?: stable.find(~/\.[0-9][0-9]/))
+
+        @Nullable String minor = stable == specialVersionKey ? (target.find(~/\.\d+\d_/)  ?: target) : (stable.find(~/\.\d+\d\./) ?: stable.find(~/\.\d+\d/))
         if (minor == null) {
             throw new IllegalArgumentException("No Java version found for stable version: $stable :(")
         }
@@ -72,7 +73,7 @@ class FabricVersionRetriever {
     String getFabricApiVersion(String target, String stable) {
         if (specialVersionsMap.containsKey(target)) return specialVersionsMap.get(target)[0]
         def xml = new XmlSlurper().parse(getInputStream(maven, "/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml"))
-        String[] filter = [stable, stable.find(~/\b[0-9]\.[0-9][0-9]/), target.find(~/\b[0-9]\.[0-9][0-9]/)]
+        String[] filter = [stable, stable.find(~/\b\d\.\d+\d/), target.find(~/\b\d\.\d+\d/)]
         for (String suffix : filter) {
             Iterator fabric = xml.versioning.versions.version.iterator().reverse()
             while (fabric.hasNext()) {
