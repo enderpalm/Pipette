@@ -7,7 +7,7 @@ class PipettePlugin implements Plugin<Project>{
 
     @Override
     void apply(Project project) {
-        project.getTasks().register("prepareDependencyVersions", PrepareDependencyVersionsTask.class, task -> {
+        project.getTasks().register("migrateMinecraft", MigrateMinecraftTask.class, task -> {
             task.setGroup("other")
             task.setDescription("Pipette: Compute Fabric & dependency versions from Minecraft version")
         })
