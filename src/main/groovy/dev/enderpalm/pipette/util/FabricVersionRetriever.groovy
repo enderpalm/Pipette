@@ -4,7 +4,7 @@ import groovy.json.JsonSlurper
 import groovy.xml.XmlSlurper
 import org.gradle.internal.impldep.org.jetbrains.annotations.Nullable
 
-class VersionRetriever {
+class FabricVersionRetriever {
 
     // Hostname for the Fabric's web service
     String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
@@ -12,8 +12,8 @@ class VersionRetriever {
     static Map<String, String> specialApiVersionsMap = new HashMap<>()
     static String nextStable = "1.19.4"
 
-    static VersionRetriever getInstance() {
-        return new VersionRetriever()
+    static FabricVersionRetriever getInstance() {
+        return new FabricVersionRetriever()
     }
 
     Collection<String> listGameVersions(){
