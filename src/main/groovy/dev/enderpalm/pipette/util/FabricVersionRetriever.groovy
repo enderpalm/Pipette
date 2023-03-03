@@ -25,6 +25,7 @@ class FabricVersionRetriever {
         if (specialVersionsMap.containsKey(target)) {
             return specialVersionsMap.get(target)[1].toInteger()
         }
+
         @Nullable String minor = stable == specialVersionKey ? (target.find(~/\.\d+\d_/)  ?: target) : (stable.find(~/\.\d+\d\./) ?: stable.find(~/\.\d+\d/))
         if (minor == null) {
             throw new IllegalArgumentException("No Java version found for stable version: $stable :(")

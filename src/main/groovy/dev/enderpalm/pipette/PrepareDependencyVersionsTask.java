@@ -39,11 +39,15 @@ public class PrepareDependencyVersionsTask extends DefaultTask {
             throw new IllegalArgumentException("Invalid Minecraft version: " + this.minecraft);
         }
         var loader = retriever.getLatestLoaderVersion();
+        var java = retriever.getJavaVersion(this.minecraft, stable);
+
         this.properties.put("minecraft_version", this.minecraft);
         this.properties.put("loader_version", loader);
         this.properties.put("yarn_mappings", retriever.getYarnMappingVersion(this.minecraft));
         this.properties.put("fabric_version", retriever.getFabricApiVersion(this.minecraft, stable));
+
         fileHandler.modifyGradleProperties(project.getAnt(), this.properties);
-        fileHandler.modifyFabricModJson(project.getProjectDir(), loader, this.minecraft);
+        Object json = fileHandler.modifyFabricModJson(project.getProjectDir(), loader, this.minecraft, java);
+        fileHandler.modifyMixinJson(project.getProjectDir(), json, java);
     }
 }
