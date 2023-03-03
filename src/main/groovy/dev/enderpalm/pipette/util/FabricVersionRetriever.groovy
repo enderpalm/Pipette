@@ -10,10 +10,8 @@ class FabricVersionRetriever {
     final String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
     final String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
     static final Map<String, List<String>> specialVersionsMap = new HashMap<>()
+    static final String specialVersionKey = "specialVersion"
     static final String nextStable = "1.19.4"
-    static final JavaVersion JAVA_8 = new JavaVersion(null, "JAVA_8")
-    static final JavaVersion JAVA_16 = new JavaVersion(null, "JAVA_16")
-    static final JavaVersion JAVA_17 = new JavaVersion(null, "JAVA_17")
 
     static FabricVersionRetriever getInstance() {
         return new FabricVersionRetriever()
@@ -23,25 +21,22 @@ class FabricVersionRetriever {
         return jsonSlurp("/v2/versions/game").collect({ it.version })
     }
 
-    List<String> getJavaVersion(String target, String stable) {
+    int getJavaVersion(String target, String stable) {
         if (specialVersionsMap.containsKey(target)) {
-            String ver = specialVersionsMap.get(target)[1]
-            return [ver, ver.find(~/\d+/)].toList()
+            return specialVersionsMap.get(target)[1].toInteger()
         }
-        @Nullable String minor = stable == "specialVersion" ? (target.find(~/\.[0-9][0-9]_/)  ?: target) : (stable.find(~/\.[0-9][0-9]\./) ?: stable.find(~/\.[0-9][0-9]/))
+        @Nullable String minor = stable == specialVersionKey ? (target.find(~/\.[0-9][0-9]_/)  ?: target) : (stable.find(~/\.[0-9][0-9]\./) ?: stable.find(~/\.[0-9][0-9]/))
         if (minor == null) {
             throw new IllegalArgumentException("No Java version found for stable version: $stable :(")
         }
         // Modified from https://github.com/FabricMC/fabricmc.net/blob/main/scripts/src/lib/template/java.ts#L29
         int ver = minor.substring(1, minor.length() - 1).toInteger()
-        if (ver < 16) return [JAVA_8.version, JAVA_8.jsonVersion()].toList()
-        if (ver == 16) return [JAVA_16.version, JAVA_16.jsonVersion()].toList()
-        return [JAVA_17.version, JAVA_17.jsonVersion()].toList()
+        return ver < 16 ? 8 : (ver == 16 ? 16 : 17)
     }
 
     @Nullable
     String validateVersionAndFindStable(String target) {
-        if (specialVersionsMap.containsKey(target)) return "specialVersion"
+        if (specialVersionsMap.containsKey(target)) return specialVersionKey
         def isValid = false
         @Nullable String stable = null
         Iterator validGameVersion = jsonSlurp("/v2/versions/game").iterator()
@@ -103,23 +98,11 @@ class FabricVersionRetriever {
         throw new Exception("Pipette: Failed to connect to any host :(")
     }
 
-    class JavaVersion {
-        public String version
-
-        JavaVersion(String version) {
-            this.version = version
-        }
-
-        String jsonVersion(){
-            return version.find(~/\d+/)
-        }
-    }
-
     static {
-        for (def i = 1; i <= 7; i++) specialVersionsMap.put("1.18_experimental-snapshot-" + i, ["0.40.1+1.18_experimental", "JAVA_17"].toList())
-        specialVersionsMap.put("1.19_deep_dark_experimental_snapshot-1", ["0.58.0+1.19", "JAVA_17"].toList())
-        specialVersionsMap.put("20w14infinite", ["0.46.1+1.17", "JAVA_8"].toList())
-        specialVersionsMap.put("22w13oneblockatatime", ["0.48.1+22w13oneblockatatime", "JAVA_17"].toList())
+        for (def i = 1; i <= 7; i++) specialVersionsMap.put("1.18_experimental-snapshot-" + i, ["0.40.1+1.18_experimental", "17"].toList())
+        specialVersionsMap.put("1.19_deep_dark_experimental_snapshot-1", ["0.58.0+1.19", "17"].toList())
+        specialVersionsMap.put("20w14infinite", ["0.46.1+1.17", "8"].toList())
+        specialVersionsMap.put("22w13oneblockatatime", ["0.48.1+22w13oneblockatatime", "17"].toList())
     }
 
 }
