@@ -79,11 +79,11 @@ class FabricVersionRetrieverTest extends Specification {
 
         where:
         minecraftVersion                         | expected
-        "1.19.3"                                 | ["JAVA_17", "17"]
-        "1.14.4"                                 | ["JAVA_8", "8"]
-        "1.16.3"                                 | ["JAVA_16", "16"]
-        "1.15"                                   | ["JAVA_8", "8"]
-        "1.18_experimental-snapshot-4"           | ["JAVA_17", "17"]
-        "1.19_deep_dark_experimental_snapshot-1" | ["JAVA_17", "17"]
+        "1.19.3"                                 | 17
+        "1.14.4"                                 | 8
+        "1.16.3"                                 | 16
+        "1.15"                                   | 8
+        "1.18_experimental-snapshot-4"           | 17
+        "1.19_deep_dark_experimental_snapshot-1" | 17
     }
 }
