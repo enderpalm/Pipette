@@ -66,4 +66,24 @@ class FabricVersionRetrieverTest extends Specification {
         "1.18_experimental-snapshot-6"           | "0.40.1+1.18_experimental"
 
     }
+
+    def "Java Version"() {
+        given:
+        def instance = FabricVersionRetriever.getInstance()
+        def stable = instance.validateVersionAndFindStable(minecraftVersion)
+        def java = instance.getJavaVersion(minecraftVersion, stable)
+        println("Raw version: ${minecraftVersion}, Stable: ${stable}, Java: ${java}")
+
+        expect:
+        java == expected
+
+        where:
+        minecraftVersion                         | expected
+        "1.19.3"                                 | 17
+        "1.14.4"                                 | 8
+        "1.16.3"                                 | 16
+        "1.15"                                   | 8
+        "1.18_experimental-snapshot-4"           | 17
+        "1.19_deep_dark_experimental_snapshot-1" | 17
+    }
 }
