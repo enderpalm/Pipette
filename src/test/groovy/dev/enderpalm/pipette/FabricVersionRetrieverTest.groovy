@@ -69,9 +69,9 @@ class FabricVersionRetrieverTest extends Specification {
     def "Java Version"() {
         given:
         def instance = FabricVersionRetriever.getInstance()
-        def stable = instance.validateVersionAndFindStable(minecraftVersion)
-        def java = instance.getJavaVersion(minecraftVersion, stable)
-        println("Raw version: ${minecraftVersion}, Stable: ${stable}, Java: ${java}")
+        def available = instance.listGameVersions()
+        def java = instance.getJavaVersion(minecraftVersion, available)
+        println("Raw version: ${minecraftVersion}, Java: ${java}")
 
         expect:
         java == expected
@@ -79,14 +79,17 @@ class FabricVersionRetrieverTest extends Specification {
         where:
         minecraftVersion                         | expected
         "1.19.3"                                 | 17
-        "1.14.4"                                 | 8
-        "1.16.3"                                 | 16
-        "1.15"                                   | 8
+        "1.16.3"                                 | 8
+        "20w14a"                                 | 8
         "1.18_experimental-snapshot-4"           | 17
         "1.19_deep_dark_experimental_snapshot-1" | 17
+        "1.18"                                   | 17
+        "1.16"                                   | 8
+        "21w19a"                                 | 16
+        "1.17.1"                                 | 17
     }
 
-    def "List game versions"(){
+    def "List game versions"() {
         given:
         def versions = FabricVersionRetriever.getInstance().listGameVersions()
         println("Versions: ${versions}")
