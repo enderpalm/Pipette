@@ -1,14 +1,14 @@
 package dev.enderpalm.pipette.util
 
 import groovy.json.JsonSlurper
-import groovy.xml.XmlSlurper
+import org.gradle.internal.impldep.org.jetbrains.annotations.NotNull
 import org.gradle.internal.impldep.org.jetbrains.annotations.Nullable
 
 class FabricVersionRetriever {
 
     // Hostname for the Fabric's web service
     final String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
-    final String[] maven = ["https://maven.fabricmc.net", "https://maven2.fabricmc.net"]
+    final String[] modrinth = ["https://api.modrinth.com"]
     static final Map<String, List<String>> specialVersionsMap = new HashMap<>()
     static final String specialVersionKey = "specialVersion"
     static final String nextStable = "1.19.4"
@@ -17,8 +17,17 @@ class FabricVersionRetriever {
         return new FabricVersionRetriever()
     }
 
-    Collection<String> listGameVersions() {
-        return jsonSlurp("/v2/versions/game").collect({ it.version })
+    @NotNull List<String> listGameVersions() {
+        List<String> validVersions = new ArrayList<>()
+        Iterator gameVersions = jsonSlurp(modrinth, "/v2/project/P7dR8mSH/version").iterator()
+        while (gameVersions.hasNext()) {
+            def version = gameVersions.next()
+            String[] iteratedVersion = version.game_versions
+            iteratedVersion.each { ver ->
+                if (validVersions.empty || ver != validVersions.last()) validVersions.add(ver)
+            }
+        }
+        return validVersions
     }
 
     int getJavaVersion(String target, String stable) {
@@ -40,7 +49,7 @@ class FabricVersionRetriever {
         if (specialVersionsMap.containsKey(target)) return specialVersionKey
         def isValid = false
         @Nullable String stable = null
-        Iterator validGameVersion = jsonSlurp("/v2/versions/game").iterator()
+        Iterator validGameVersion = jsonSlurp(meta,"/v2/versions/game").iterator()
         while (validGameVersion.hasNext()) {
             def ver = validGameVersion.next()
             stable = ver.stable ? ver.version : stable
@@ -52,40 +61,36 @@ class FabricVersionRetriever {
         return isValid ? (stable ?: nextStable) : null
     }
 
-    String getYarnMappingVersion(String target) {
-        Iterator yarn = jsonSlurp("/v2/versions/yarn").iterator()
+    @Nullable String getYarnMappingVersion(@NotNull String target) {
+        Iterator yarn = jsonSlurp(meta,"/v2/versions/yarn").iterator()
         while (yarn.hasNext()) {
             def map = yarn.next()
             if (map.gameVersion == target) return map.version
         }
-        return "Error: No yarn mappings found for game version $target :("
+        return null
     }
 
-    String getLatestLoaderVersion() {
-        Iterator loader = jsonSlurp("/v2/versions/loader").iterator()
+    @Nullable String getLatestLoaderVersion() {
+        Iterator loader = jsonSlurp(meta,"/v2/versions/loader").iterator()
         while (loader.hasNext()) {
             def load = loader.next()
             if (load.stable) return load.version
         }
-        return "Error: No loader version found :("
+        return null
     }
 
-    String getFabricApiVersion(String target, String stable) {
+    @Nullable String getFabricApiVersion(@NotNull String target) {
         if (specialVersionsMap.containsKey(target)) return specialVersionsMap.get(target)[0]
-        def xml = new XmlSlurper().parse(getInputStream(maven, "/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml"))
-        String[] filter = [stable, stable.find(~/\b\d\.\d+\d/), target.find(~/\b\d\.\d+\d/)]
-        for (String suffix : filter) {
-            Iterator fabric = xml.versioning.versions.version.iterator().reverse()
-            while (fabric.hasNext()) {
-                String api = fabric.next()
-                if (api.endsWith(suffix)) return api
-            }
+        Iterator apiVersions = jsonSlurp(modrinth,"/v2/project/P7dR8mSH/version").iterator()
+        while (apiVersions.hasNext()) {
+            def api = apiVersions.next()
+            if (api.game_versions.contains(target)) return api.version_number
         }
-        return "Error: No fabric api version found for game version $target :("
+        return null
     }
 
-    Object jsonSlurp(String url) {
-        return new JsonSlurper().parseText(getInputStream(meta, url).getText())
+    Object jsonSlurp(String[] hostname, String url) {
+        return new JsonSlurper().parseText(getInputStream(hostname, url).getText())
     }
 
     InputStream getInputStream(String[] hostname, String path) {
