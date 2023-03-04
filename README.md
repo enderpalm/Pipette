@@ -11,7 +11,7 @@ To use this plugin, you have to include it in your `build.gradle` file. Noted th
 
 
 **Groovy Gradle**
-```groovy
+```gradle
 // -- build.gradle -- // 
 plugins{
   id "dev.enderpalm.pipette" version "1.+"
@@ -24,6 +24,24 @@ pluginManagement {
     }
 }
 ```
+
+**Alternative method for getting plugin** </br>
+Pipette can be retrieved from GitHub Package repository which requires your own **GitHub token with read-access** and use it as shown below: 
+```gradle
+pluginManagement {
+    repositories {
+        maven{
+            name = 'GitHubPackages'
+            url = uri("https://maven.pkg.github.com/enderpalm/Pipette")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+```
+- Useful links on [GitHub Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token#creating-a-personal-access-token-classic) and [Consuming Maven package from GitHub package registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package)
 
 ### Task Command
 
