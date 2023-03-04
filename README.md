@@ -12,7 +12,7 @@ To use this plugin, you have to include it in your `build.gradle` file. Noted th
 
 **Groovy Gradle**
 ```groovy
-// -- build.gradle -- //
+// -- build.gradle -- // 
 plugins{
   id "dev.enderpalm.pipette" version "1.+"
 }
@@ -33,7 +33,7 @@ Pipette `migrateMinecraft` task accepts `--ver` as arg to set target Minecraft v
 ```
 After running this command, your **fabric.mod.json**, **\*.mixins.json**, **gradle.properties** should change theirs token respected to inputted `--ver` and gradle should start downloading dependencies and mapping automatically.
 
-<p align=center> Made with <b>♥</b> using <a href="https://github.com/enderpalm/Pipette/blob/master/LICENSE">MIT License</a></p>
+<p align=center> Made with <b>🤍</b> using <a href="https://github.com/enderpalm/Pipette/blob/master/LICENSE">MIT License</a></p>
   
   
 
