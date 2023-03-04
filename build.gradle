@@ -2,6 +2,7 @@ plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '1.1.0'
 }
 
 group 'dev.enderpalm'
@@ -18,10 +19,34 @@ dependencies {
 gradlePlugin {
     plugins {
         pipette {
-            id = "pipette"
+            id = "dev.enderpalm.pipette"
             displayName = 'Pipette'
-            description = 'Simple Minecraft Fabric mod dependency versioning tool'
             implementationClass = 'dev.enderpalm.pipette.PipettePlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/enderpalm/Pipette'
+    vcsUrl = 'https://github.com/enderpalm/Pipette.git'
+    description = 'Simple Minecraft Fabric mod dependency versioning tool'
+    tags = ['minecraft', 'fabric', 'mod', 'dependency', 'versioning']
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/enderpalm/Pipette")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
