@@ -17,8 +17,17 @@ class FabricVersionRetriever {
         return new FabricVersionRetriever()
     }
 
-    Collection<String> listGameVersions() {
-        return jsonSlurp(meta,"/v2/versions/game").collect({ it.version })
+    @NotNull List<String> listGameVersions() {
+        List<String> validVersions = new ArrayList<>()
+        Iterator gameVersions = jsonSlurp(modrinth, "/v2/project/P7dR8mSH/version").iterator()
+        while (gameVersions.hasNext()) {
+            def version = gameVersions.next()
+            String[] iteratedVersion = version.game_versions
+            iteratedVersion.each { ver ->
+                if (validVersions.empty || ver != validVersions.last()) validVersions.add(ver)
+            }
+        }
+        return validVersions
     }
 
     int getJavaVersion(String target, String stable) {

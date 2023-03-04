@@ -20,15 +20,14 @@ class FabricVersionRetrieverTest extends Specification {
         "20w14a"                       | "1.16"
     }
 
-    //* -- Update this test when loader version changes --
     def "Latest Fabric loader version"() {
         given:
         def loader = FabricVersionRetriever.getInstance().getLatestLoaderVersion()
+        println(loader)
 
         expect:
-        loader.matches("0.14.14")
+        loader != null
     }
-    //*/
 
     def "Yarn mapping version"() {
         expect:
@@ -85,5 +84,13 @@ class FabricVersionRetrieverTest extends Specification {
         "1.15"                                   | 8
         "1.18_experimental-snapshot-4"           | 17
         "1.19_deep_dark_experimental_snapshot-1" | 17
+    }
+
+    def "List game versions"(){
+        given:
+        def versions = FabricVersionRetriever.getInstance().listGameVersions()
+        println("Versions: ${versions}")
+        expect:
+        versions.size() > 0
     }
 }
