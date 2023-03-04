@@ -16,6 +16,7 @@ public class MigrateMinecraftTask extends DefaultTask {
 
     private String target;
     private final Map<String, String> properties = new HashMap<>();
+    private final List<String> validVersions = FabricVersionRetriever.getInstance().listGameVersions();
 
     /**
      * Creates a new {@link MigrateMinecraftTask}.
@@ -30,7 +31,7 @@ public class MigrateMinecraftTask extends DefaultTask {
 
     @OptionValues("ver")
     Collection<String> getValidMinecraftVersions() {
-        return FabricVersionRetriever.getInstance().listGameVersions();
+        return validVersions;
     }
 
     @TaskAction
@@ -43,7 +44,7 @@ public class MigrateMinecraftTask extends DefaultTask {
             throw new IllegalArgumentException("Invalid Minecraft version: " + this.target);
         }
         var loader = retriever.getLatestLoaderVersion();
-        var java = retriever.getJavaVersion(this.target, stable);
+        var java = retriever.getJavaVersion(this.target, validVersions);
 
         this.properties.put("minecraft_version", this.target);
         this.properties.put("loader_version", loader);
