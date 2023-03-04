@@ -32,3 +32,8 @@ Pipette `migrateMinecraft` task accepts `--ver` as arg to set target Minecraft v
 ./gradlew migrateMinecraft --ver "1.19.2"
 ```
 After running this command, your **fabric.mod.json**, **\*.mixins.json**, **gradle.properties** should change theirs token respected to inputted `--ver` and gradle should start downloading dependencies and mapping automatically.
+
+<p align=center> Made with <b>♥</b> using <a href="https://github.com/enderpalm/Pipette/blob/master/LICENSE">MIT License</a></p>
+  
+  
+
