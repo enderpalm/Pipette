@@ -33,6 +33,8 @@ Pipette `migrateMinecraft` task accepts `--ver` as arg to set target Minecraft v
 ```
 After running this command, your **fabric.mod.json**, **\*.mixins.json**, **gradle.properties** should change theirs token respected to inputted `--ver` and gradle should start downloading dependencies and mapping automatically.
 
+> **Warning** Due to error of Fabric loader unknown to me, you need to delete `fabric-api` key in `depends` block in `fabric.mod.json`, or loader will split out **Incompatible mod set** error
+
 <p align=center> Made with <b>🤍</b> using <a href="https://github.com/enderpalm/Pipette/blob/master/LICENSE">MIT License</a></p>
   
   
