@@ -9,11 +9,17 @@ import org.gradle.api.tasks.options.OptionValues;
 
 import java.util.*;
 
+/**
+ * Gradle task to migrate a Minecraft mod to a new Minecraft version.
+ */
 public class MigrateMinecraftTask extends DefaultTask {
 
     private String target;
     private final Map<String, String> properties = new HashMap<>();
 
+    /**
+     * Creates a new {@link MigrateMinecraftTask}.
+     */
     public MigrateMinecraftTask() {
     }
 
