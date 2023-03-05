@@ -14,7 +14,7 @@ jobs:
       - name: Find artifacts
         id: find-artifacts
         run: |
-          output=$(find build/libs -type f -name "*.jar")
+          output="$(find build/libs/ ! -name "*-javadoc.jar" ! -name "*-sources.jar" -type f -printf "%f\n")"
           echo "jar=$output" >> $GITHUB_OUTPUT
       - name: Upload to the Github release
         uses: actions/upload-release-asset@v1
