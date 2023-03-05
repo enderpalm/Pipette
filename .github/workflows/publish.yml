@@ -1,0 +1,27 @@
+name: Gradle CD
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  rebuild:
+   uses: ./.github/workflows/dev-build.yml
+  publish:
+    needs: rebuild
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find artifacts
+        id: find-artifacts
+        run: |
+          output=$(find build/libs -type f -name "*.jar")
+          echo "jar=$output" >> $GITHUB_OUTPUT
+      - name: Upload to the Github release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: build/libs/${{ steps.find-artifacts.outputs.jar}}
+          asset_name: ${{ steps.find-artifacts.outputs.jar}}
+          asset_content_type: application/java-archive
