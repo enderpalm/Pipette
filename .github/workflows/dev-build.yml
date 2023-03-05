@@ -1,9 +1,9 @@
-
 name: Groovy CI
 
 on:
   - push
   - pull_request
+  - workflow_call
 
 jobs:
   build:
