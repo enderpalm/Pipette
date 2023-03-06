@@ -6,14 +6,17 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
 import org.gradle.api.tasks.options.OptionValues;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class MigrateMinecraftTask extends DefaultTask {
 
     private String target;
     private final Map<String, String> properties = new HashMap<>();
     private final List<String> validVersions = FabricVersionRetriever.getInstance().listGameVersions();
+    private static final Map<String, Function<Void, String>> keywords = new HashMap<>();
 
     public MigrateMinecraftTask() {
     }
@@ -25,6 +28,7 @@ public class MigrateMinecraftTask extends DefaultTask {
 
     @OptionValues("ver")
     Collection<String> getValidMinecraftVersions() {
+        validVersions.addAll(keywords.keySet());
         return validVersions;
     }
 
@@ -33,6 +37,10 @@ public class MigrateMinecraftTask extends DefaultTask {
         var retriever = FabricVersionRetriever.getInstance();
         var fileHandler = FileHandler.getInstance();
         var project = this.getProject();
+        if (keywords.containsKey(this.target)) {
+            keywords.get(this.target).apply(null);
+            return;
+        }
         String stable = retriever.validateVersionAndFindStable(this.target);
         if (stable == null) {
             throw new IllegalArgumentException("Invalid Minecraft version: " + this.target);
@@ -49,4 +57,30 @@ public class MigrateMinecraftTask extends DefaultTask {
         Object json = fileHandler.modifyFabricModJson(project.getProjectDir(), loader, stable, java);
         fileHandler.modifyMixinJson(project.getProjectDir(), json, java);
     }
+
+    static @NotNull String bold(String text) {
+        return "\033[0;1m" + text + "\033[0;0m";
+    }
+
+    static{
+        keywords.put("list", (Void) -> {
+            var instance = FabricVersionRetriever.getInstance();
+            String prevStable = FabricVersionRetriever.getNextStable();
+            Set<String> specialVersions = FabricVersionRetriever.getSpecialVersionsMap().keySet();
+            System.out.println("[i] List of available Minecraft versions:\n\n");
+            System.out.println();
+            for (String version : instance.listGameVersions()) {
+                if (specialVersions.contains(version)) continue;
+                var stable = instance.validateVersionAndFindStable(version);
+                if (version.equals(stable)){
+
+                } else {
+
+                }
+                prevStable = stable;
+            }
+            return null;
+        });
+    }
+
 }

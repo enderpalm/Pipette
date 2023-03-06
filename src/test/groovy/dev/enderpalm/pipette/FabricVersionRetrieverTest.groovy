@@ -18,6 +18,8 @@ class FabricVersionRetrieverTest extends Specification {
         "1.18_experimental-snapshot-1" | "specialVersion"
         "18w43b"                       | null
         "20w14a"                       | "1.16"
+        "1.16.5"                       | "1.16.5"
+        "21w03a"                       | "1.17"
     }
 
     def "Latest Fabric loader version"() {
