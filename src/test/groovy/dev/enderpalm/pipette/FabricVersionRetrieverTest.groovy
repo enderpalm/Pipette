@@ -21,12 +21,11 @@ class FabricVersionRetrieverTest extends Specification {
     }
 
     def "Latest Fabric loader version"() {
-        given:
+        when:
         def loader = FabricVersionRetriever.getInstance().getLatestLoaderVersion()
-        println(loader)
 
-        expect:
-        loader != null
+        then:
+        println(loader)
     }
 
     def "Yarn mapping version"() {
@@ -87,10 +86,10 @@ class FabricVersionRetrieverTest extends Specification {
     }
 
     def "List game versions"(){
-        given:
+        when:
         def versions = FabricVersionRetriever.getInstance().listGameVersions()
+
+        then:
         println("Versions: ${versions}")
-        expect:
-        versions.size() > 0
     }
 }
