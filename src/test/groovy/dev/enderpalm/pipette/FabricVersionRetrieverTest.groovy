@@ -86,7 +86,7 @@ class FabricVersionRetrieverTest extends Specification {
         "1.18"                                   | 17
         "1.16"                                   | 8
         "21w19a"                                 | 16
-        "1.17.1"                                 | 17
+        "1.17.1"                                 | 16
     }
 
     def "List game versions"() {
