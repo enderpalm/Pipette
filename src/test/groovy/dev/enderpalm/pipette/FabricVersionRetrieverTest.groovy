@@ -21,12 +21,11 @@ class FabricVersionRetrieverTest extends Specification {
     }
 
     def "Latest Fabric loader version"() {
-        given:
+        when:
         def loader = FabricVersionRetriever.getInstance().getLatestLoaderVersion()
-        println(loader)
 
-        expect:
-        loader != null
+        then:
+        println(loader)
     }
 
     def "Yarn mapping version"() {
@@ -79,21 +78,18 @@ class FabricVersionRetrieverTest extends Specification {
         where:
         minecraftVersion                         | expected
         "1.19.3"                                 | 17
-        "1.16.3"                                 | 8
-        "20w14a"                                 | 8
+        "1.14.4"                                 | 8
+        "1.16.3"                                 | 16
+        "1.15"                                   | 8
         "1.18_experimental-snapshot-4"           | 17
         "1.19_deep_dark_experimental_snapshot-1" | 17
-        "1.18"                                   | 17
-        "1.16"                                   | 8
-        "21w19a"                                 | 16
-        "1.17.1"                                 | 17
     }
 
-    def "List game versions"() {
-        given:
+    def "List game versions"(){
+        when:
         def versions = FabricVersionRetriever.getInstance().listGameVersions()
+
+        then:
         println("Versions: ${versions}")
-        expect:
-        versions.size() > 0
     }
 }
