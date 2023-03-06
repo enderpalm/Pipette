@@ -79,7 +79,7 @@ class FabricVersionRetrieverTest extends Specification {
         minecraftVersion                         | expected
         "1.19.3"                                 | 17
         "1.14.4"                                 | 8
-        "1.16.3"                                 | 16
+        "1.16.3"                                 | 8
         "1.15"                                   | 8
         "1.18_experimental-snapshot-4"           | 17
         "1.19_deep_dark_experimental_snapshot-1" | 17
