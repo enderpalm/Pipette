@@ -16,7 +16,7 @@ class FabricVersionRetrieverTest extends Specification {
         "1.19.4-pre1"                  | "1.19.4"
         "22w45a"                       | "1.19.3"
         "1.18_experimental-snapshot-1" | "specialVersion"
-        "18w43b"                       | "1.14"
+        "18w43b"                       | null
         "20w14a"                       | "1.16"
     }
 

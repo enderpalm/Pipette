@@ -13,6 +13,7 @@ class FabricVersionRetriever {
     static final Map<String, Integer> terminalVersionsJavaMap = new HashMap<>()
     static final String specialVersionKey = "specialVersion"
     static final String nextStable = "1.19.4"
+    static final String oldestMojangMapping = "1.14.4" // Oldest Minecraft version with Mojang mappings
 
     static FabricVersionRetriever getInstance() {
         return new FabricVersionRetriever()
@@ -20,15 +21,17 @@ class FabricVersionRetriever {
 
     @NotNull List<String> listGameVersions() {
         List<String> validVersions = new ArrayList<>()
-        Iterator gameVersions = jsonSlurp(modrinth, "/v2/project/P7dR8mSH/version").iterator()
+        Iterator gameVersions = jsonSlurp(modrinth, "/v2/project/P7dR8mSH/version").iterator().reverse()
+        def reachMappingAvailable = false
         while (gameVersions.hasNext()) {
             def version = gameVersions.next()
             String[] iteratedVersion = version.game_versions
             iteratedVersion.each { ver ->
-                if (validVersions.empty || ver != validVersions.last()) validVersions.add(ver)
+                if (ver == oldestMojangMapping && !reachMappingAvailable) reachMappingAvailable = true
+                if ((validVersions.empty || !validVersions.contains(ver)) && reachMappingAvailable) validVersions.add(ver)
             }
         }
-        return validVersions
+        return validVersions.reverse()
     }
 
     int getJavaVersion(@NotNull String target, @NotNull List<String> validVersions) {
@@ -60,6 +63,7 @@ class FabricVersionRetriever {
                 isValid = true
                 break
             }
+            if (ver.version == oldestMojangMapping) break
         }
         return isValid ? (stable ?: nextStable) : null
     }
