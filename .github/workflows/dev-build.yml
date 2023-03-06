@@ -31,11 +31,6 @@ jobs:
       run: chmod +x ./gradlew
     - name: Build Artifacts
       run: ./gradlew build
-    - name: Find artifacts
-      id: find-artifacts
-      run: |
-          output="$(find build/libs/ ! -name "*-javadoc.jar" ! -name "*-sources.jar" -type f -printf "%f\n")"
-          echo "artifact=$output" >> $GITHUB_OUTPUT
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
