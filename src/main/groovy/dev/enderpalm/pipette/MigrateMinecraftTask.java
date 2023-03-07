@@ -89,7 +89,7 @@ public class MigrateMinecraftTask extends DefaultTask {
                     if (nextStable != null && nextStable.equals(stable)) builder.append(", ");
                     lineLength += current.length() + 2;
                     if (lineLength > wrapLength) {
-                        builder.append("\n\t\t\t");
+                        builder.append("\n\t\t");
                         lineLength = 0;
                     }
                 }
