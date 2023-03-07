@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 public class MigrateMinecraftTask extends DefaultTask {
 
@@ -62,22 +63,26 @@ public class MigrateMinecraftTask extends DefaultTask {
         return "\033[0;1m" + text + "\033[0;0m";
     }
 
-    static{
+    static {
         keywords.put("list", (Void) -> {
             var instance = FabricVersionRetriever.getInstance();
             String prevStable = FabricVersionRetriever.getNextStable();
-            Set<String> specialVersions = FabricVersionRetriever.getSpecialVersionsMap().keySet();
-            System.out.println("[i] List of available Minecraft versions:\n\n");
-            System.out.println();
-            for (String version : instance.listGameVersions()) {
-                if (specialVersions.contains(version)) continue;
-                var stable = instance.validateVersionAndFindStable(version);
-                if (version.equals(stable)){
+            List<String> specialVersions = FabricVersionRetriever.getSpecialVersionsMap().keySet().stream().toList();
+            int wrapLength = 80;
 
-                } else {
+            System.out.println("[i] List of available Minecraft versions:\n");
+            System.out.println(bold("Release & Dev versions") + " <release>: <dev>");
 
+            System.out.print(bold("Special versions\n\t"));
+            int lineLength = 0;
+            for (String version : specialVersions){
+                System.out.print(version);
+                if (!version.equals(specialVersions.get(specialVersions.size() - 1))) System.out.print(", ");
+                lineLength += version.length() + 2;
+                if (lineLength > wrapLength) {
+                    System.out.print("\n\t");
+                    lineLength = 0;
                 }
-                prevStable = stable;
             }
             return null;
         });
