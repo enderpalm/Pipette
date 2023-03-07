@@ -12,7 +12,7 @@ class MigrateMinecraftTest extends Specification{
         buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
             plugins {
-                id 'pipette'
+                id 'dev.enderpalm.pipette'
             }
         """
     }
