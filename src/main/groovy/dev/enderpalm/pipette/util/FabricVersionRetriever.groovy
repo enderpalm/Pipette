@@ -9,10 +9,11 @@ class FabricVersionRetriever {
     // Hostname for the Fabric's web service
     final String[] meta = ["https://meta.fabricmc.net", "https://meta2.fabricmc.net"]
     final String[] modrinth = ["https://api.modrinth.com"]
-    static final Map<String, List<String>> specialVersionsMap = new HashMap<>()
+    static final Map<String, List<String>> specialVersionsMap = new TreeMap<String, List<String>>()
     static final Map<String, Integer> terminalVersionsJavaMap = new HashMap<>()
     static final String specialVersionKey = "specialVersion"
     static final String nextStable = "1.19.4"
+    static final String oldestMojangMapping = "1.14.4" // Oldest Minecraft version with Mojang mappings
 
     static FabricVersionRetriever getInstance() {
         return new FabricVersionRetriever()
@@ -20,15 +21,17 @@ class FabricVersionRetriever {
 
     @NotNull List<String> listGameVersions() {
         List<String> validVersions = new ArrayList<>()
-        Iterator gameVersions = jsonSlurp(modrinth, "/v2/project/P7dR8mSH/version").iterator()
+        Iterator gameVersions = jsonSlurp(modrinth, "/v2/project/P7dR8mSH/version").iterator().reverse()
+        def reachMappingAvailable = false
         while (gameVersions.hasNext()) {
             def version = gameVersions.next()
             String[] iteratedVersion = version.game_versions
             iteratedVersion.each { ver ->
-                if (validVersions.empty || ver != validVersions.last()) validVersions.add(ver)
+                if (ver == oldestMojangMapping && !reachMappingAvailable) reachMappingAvailable = true
+                if ((validVersions.empty || !validVersions.contains(ver)) && reachMappingAvailable) validVersions.add(ver)
             }
         }
-        return validVersions
+        return validVersions.reverse()
     }
 
     int getJavaVersion(@NotNull String target, @NotNull List<String> validVersions) {
@@ -60,6 +63,7 @@ class FabricVersionRetriever {
                 isValid = true
                 break
             }
+            if (ver.version == oldestMojangMapping) break
         }
         return isValid ? (stable ?: nextStable) : null
     }
@@ -109,10 +113,10 @@ class FabricVersionRetriever {
 
     static {
         // Special versions
-        for (def i = 1; i <= 7; i++) specialVersionsMap.put("1.18_experimental-snapshot-" + i, ["0.40.1+1.18_experimental", "17"].toList())
-        specialVersionsMap.put("1.19_deep_dark_experimental_snapshot-1", ["0.58.0+1.19", "17"].toList())
-        specialVersionsMap.put("20w14infinite", ["0.46.1+1.17", "8"].toList())
         specialVersionsMap.put("22w13oneblockatatime", ["0.48.1+22w13oneblockatatime", "17"].toList())
+        specialVersionsMap.put("1.19_deep_dark_experimental_snapshot-1", ["0.58.0+1.19", "17"].toList())
+        for (def i = 1; i <= 7; i++) specialVersionsMap.put("1.18_experimental-snapshot-" + i, ["0.40.1+1.18_experimental", "17"].toList())
+        specialVersionsMap.put("20w14infinite", ["0.46.1+1.17", "8"].toList())
 
         // Terminal versions
         terminalVersionsJavaMap.put("21w18a", 8)

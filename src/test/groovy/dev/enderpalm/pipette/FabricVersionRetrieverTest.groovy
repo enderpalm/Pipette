@@ -16,7 +16,7 @@ class FabricVersionRetrieverTest extends Specification {
         "1.19.4-pre1"                  | "1.19.4"
         "22w45a"                       | "1.19.3"
         "1.18_experimental-snapshot-1" | "specialVersion"
-        "18w43b"                       | "1.14"
+        "18w43b"                       | null
         "20w14a"                       | "1.16"
     }
 
@@ -81,8 +81,14 @@ class FabricVersionRetrieverTest extends Specification {
         "1.14.4"                                 | 8
         "1.16.3"                                 | 8
         "1.15"                                   | 8
+        "1.16.3"                                 | 8
+        "20w14a"                                 | 8
         "1.18_experimental-snapshot-4"           | 17
         "1.19_deep_dark_experimental_snapshot-1" | 17
+        "1.18"                                   | 17
+        "1.16"                                   | 8
+        "21w19a"                                 | 16
+        "1.17.1"                                 | 16
     }
 
     def "List game versions"(){
