@@ -2,8 +2,4 @@
 /.gradle/
 /build/
 /build/classes/groovy/main/
-/bin/main/dev/enderpalm/pipette/util/FabricVersionRetriever.groovy
-/bin/test/dev/enderpalm/pipette/FabricVersionRetrieverTest.groovy
-/bin/main/dev/enderpalm/pipette/util/FileHandler.groovy
-/bin/main/dev/enderpalm/pipette/MigrateMinecraftTask.class
-/bin/main/dev/enderpalm/pipette/PipettePlugin.groovy
+/bin/
