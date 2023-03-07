@@ -16,7 +16,7 @@ public class MigrateMinecraftTask extends DefaultTask {
 
     private String target;
     private final Map<String, String> properties = new HashMap<>();
-    private final List<String> validVersions = FabricVersionRetriever.getInstance().listGameVersions();
+    private static final List<String> validVersions = FabricVersionRetriever.getInstance().listGameVersions();
     private static final Map<String, Function<Void, String>> keywords = new HashMap<>();
 
     public MigrateMinecraftTask() {
@@ -65,17 +65,41 @@ public class MigrateMinecraftTask extends DefaultTask {
 
     static {
         keywords.put("list", (Void) -> {
-            var instance = FabricVersionRetriever.getInstance();
-            String prevStable = FabricVersionRetriever.getNextStable();
+            int wrapLength = 86, lineLength = 0;
             List<String> specialVersions = FabricVersionRetriever.getSpecialVersionsMap().keySet().stream().toList();
-            int wrapLength = 80;
+            List<String> normalVersions = validVersions.stream().filter(version -> !specialVersions.contains(version)).toList();
+            System.out.println("List of available Minecraft versions:\n");
 
-            System.out.println("[i] List of available Minecraft versions:\n");
             System.out.println(bold("Release & Dev versions") + " <release>: <dev>");
+            var instance = FabricVersionRetriever.getInstance();
+            String stable = instance.validateVersionAndFindStable(normalVersions.get(0));
+            for (int i = 0; i < normalVersions.size(); i++) {
+                String current = normalVersions.get(i);
+                String nextStable = i + 1 < normalVersions.size() ? instance.validateVersionAndFindStable(normalVersions.get(i + 1)) : null;
+                String spacer = Pattern.matches("\\d+\\.\\d+\\d\\.\\d", current) ? "" : "  ";
+                StringBuilder builder = new StringBuilder();
+                if (stable.equals(current)) {
+                    builder.append("\n\t").append(spacer).append(current).append(": ");
+                    if (nextStable != null && !nextStable.equals(stable)) builder.append("none");
+                    lineLength = 0;
+                }
+                else if (i == 0) builder.append("\t  none: ").append(current).append(", ");
+                else {
+                    builder.append(current);
+                    if (nextStable != null && nextStable.equals(stable)) builder.append(", ");
+                    lineLength += current.length() + 2;
+                    if (lineLength > wrapLength) {
+                        builder.append("\n\t\t\t");
+                        lineLength = 0;
+                    }
+                }
+                System.out.print(builder);
+                stable = nextStable;
+            }
 
-            System.out.print(bold("Special versions\n\t"));
-            int lineLength = 0;
-            for (String version : specialVersions){
+            lineLength = 0;
+            System.out.print("none\n\n" + bold("Special versions\n\t"));
+            for (String version : specialVersions) {
                 System.out.print(version);
                 if (!version.equals(specialVersions.get(specialVersions.size() - 1))) System.out.print(", ");
                 lineLength += version.length() + 2;
