@@ -7,27 +7,20 @@ Simple Gradle plugin providing Fabric dependency versions (other dependencies pl
 
 ## Usage Guide
 ### Integration
-To use this plugin, you have to include it in your `build.gradle` file. Note that you might also want to add `gradlePluginPortal()` in **settings.gradle**, just in case it doesn't present.
+To use this plugin, you have to include it in your `build.gradle` file.
 
-
-**Groovy Gradle**
 ```gradle
-// -- build.gradle -- // 
+// -- build.gradle -- //
 plugins{
   id "dev.enderpalm.pipette" version "1.+"
 }
-
-// -- settings.gradle -- //
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-    }
-}
 ```
 
-**Alternative method for getting plugin** </br>
-Pipette can be retrieved from GitHub Package repository which requires your own **GitHub token with read-access** and use it as shown below: 
+**Retriving from GitHub Packages** </br>
+Pipette has to be retrieved from GitHub Package repository which requires your own **GitHub token with read-access** and use it as shown below: 
+
 ```gradle
+// -- settings.gradle -- //
 pluginManagement {
     repositories {
         maven{
@@ -49,6 +42,15 @@ Pipette `migrateMinecraft` task accepts `--ver` as arg to set target Minecraft v
 ```cmd
 ./gradlew migrateMinecraft --ver "1.19.2"
 ```
+`--ver` argument has various types of received key, as in below table:
+| Arguments | Results |
+| --- | --- |
+| Game versions | Update required mapping and dependencies |
+| `list` | List all available Minecraft versions |
+| `latest` | Use latest stable version |
+| `latest-dev` | Use latest in-dev version (snapshots / rc / pre) |
+
+
 After running this command, your **fabric.mod.json**, **\*.mixins.json**, **gradle.properties** should have theirs token changed according with prompted `--ver`. Gradle will rebuild your project and downloading dependencies and mapping automatically. *PS: I only tested it in IntelliJ Idea, VScode and Eclipse aren't yet tested.*
 
 > **Warning** Due to error of Fabric loader unknown to me, you need to delete `fabric-api` key in `depends` block in `fabric.mod.json`, or loader will split out **Incompatible mod set** error.
