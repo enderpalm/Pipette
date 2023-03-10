@@ -2,7 +2,6 @@ plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '1.1.0'
 }
 
 group 'dev.enderpalm'
@@ -25,13 +24,6 @@ gradlePlugin {
             implementationClass = 'dev.enderpalm.pipette.PipettePlugin'
         }
     }
-}
-
-pluginBundle {
-    website = 'https://github.com/enderpalm/Pipette'
-    vcsUrl = 'https://github.com/enderpalm/Pipette.git'
-    description = 'Simple Minecraft Fabric mod dependency versioning tool'
-    tags = ['minecraft', 'fabric', 'mod', 'dependency', 'versioning']
 }
 
 publishing {
