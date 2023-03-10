@@ -12,15 +12,17 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+/**
+ * Migration task for migrating a Minecraft mod to a new Minecraft version.
+ * @author Enderpalm
+ * @since 1.0
+ */
 public class MigrateMinecraftTask extends DefaultTask {
 
     private String target;
     private final Map<String, String> properties = new HashMap<>();
     private static final List<String> validVersions = FabricVersionRetriever.getInstance().listGameVersions();
     private static final Map<String, Function<Void, String>> keywords = new HashMap<>();
-
-    public MigrateMinecraftTask() {
-    }
 
     @Option(option = "ver", description = "Minecraft version to use for dependencies")
     void setTarget(String target) {
@@ -39,8 +41,9 @@ public class MigrateMinecraftTask extends DefaultTask {
         var fileHandler = FileHandler.getInstance();
         var project = this.getProject();
         if (keywords.containsKey(this.target)) {
-            keywords.get(this.target).apply(null);
-            return;
+            var reply = keywords.get(this.target).apply(null);
+            if (reply == null) return;
+            this.target = reply;
         }
         String stable = retriever.validateVersionAndFindStable(this.target);
         if (stable == null) {
@@ -109,6 +112,20 @@ public class MigrateMinecraftTask extends DefaultTask {
                 }
             }
             return null;
+        });
+        keywords.put("latest", (String) -> {
+            var retriever = FabricVersionRetriever.getInstance();
+            var latest = retriever.listGameVersions().stream().filter(version ->
+                    Objects.equals(retriever.validateVersionAndFindStable(version), version)).findFirst();
+            System.out.println("Latest stable Minecraft version: " + latest.orElse("none"));
+            return latest.orElse(null);
+        });
+        keywords.put("latest-dev", (String) -> {
+            var retriever = FabricVersionRetriever.getInstance();
+            var latest = retriever.listGameVersions().stream().filter(version ->
+                    !Objects.equals(retriever.validateVersionAndFindStable(version), version)).findFirst();
+            System.out.println("Latest dev Minecraft version: " + latest.orElse("none"));
+            return latest.orElse(null);
         });
     }
 
